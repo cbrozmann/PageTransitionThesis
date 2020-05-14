@@ -1,0 +1,842 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <!--icon damit keine favicon.ico Fehlermeldung auftritt-->
+    <link href="data:;base64,iVBORw0KGgo=" rel="icon">
+    <!-- Bootstrap CSS -->
+    <!--<link href="./css/bootstrap.min.css" rel="stylesheet">-->
+    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet">
+
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" rel="stylesheet">
+    <!--<link href="./css/all.css" rel="stylesheet">-->
+    <!--Jquery-->
+    <!--<link href="./css/jquery-ui.css" rel="stylesheet">-->
+    <link href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+
+    <title>Pagetransition</title>
+
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+
+        .bar:hover {
+            fill: orange;
+        }
+
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: auto;
+            background-color: #f1f1f1;
+        }
+
+        .tab-pane.container.active {
+            background-color: #ffffff;
+        }
+
+        .tab-pane.container-fluid.fade.active.show {
+            background-color: #ffffff;
+        }
+
+        .visualizationSettings {
+            display: block;
+            height: inherit;
+            background-color: transparent;
+        }
+
+        .innercopen {
+            left: 0;
+            top: 0;
+            background-color: transparent;
+            padding-left: 5px;
+            display: none;
+            overflow-y: auto;
+            height: inherit;
+        }
+
+        .visualizationSettings .c {
+            display: block;
+        }
+
+        .visualizationSettings label {
+            display: block;
+        }
+
+        label {
+            padding: 0 3px;
+        }
+
+        input[name='visSetting'] {
+            display: none;
+        }
+
+        input[name='visSetting']:checked + label + .c {
+            display: block;
+        }
+    </style>
+    <!--Jquery um Elemente ziehen zu koennen-->
+    <script src="./lib/jquery-1.12.4.js"></script>
+    <!--<script src="//code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="./lib/jquery-ui.js"></script>
+    <!--<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand">
+        Pagetransition Visualisierungen
+    </a>
+    <!--Navigationbar mit Menueicon, falls Fenstergroesse zu klein wird-->
+    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            class="navbar-toggler"
+            data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav nav-pills">
+            <!--Tabs in der Navigationbar-->
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#menu_import" id="import-data-tab"> <em
+                        class="fas fa-file-import"></em> Datenimport</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#menu_vis" id="visualization"> <em
+                        class="fas fa-tools"></em> Visualisierung</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="tab-content">
+    <!--Dataimport Tab Anfang-->
+    <div class="tab-pane container active" id="menu_import">
+        <div class="jumbotron">
+            <div style="text-align:center">
+                <!--<button class="btn btn-primary impbut"
+                    onClick="loadEyevidoData(); $('.impbut').hide(); $('.gobut').show()" @click="tryDemoData">
+                    <em class="fas fa-database"></em> Try Demo Data1!
+                </button>
+            -->
+                <button @click="tryDemoData"
+                        class="btn btn-primary impbut"
+                        onClick="loadStimuliDiscoveryData(); $('.impbut').hide(); $('.gobut').show()">
+                    <em class="fas fa-database"></em> Try Demo Data!
+                </button>
+                <button class="btn btn-success gobut" onclick='$("#visualization").tab("show")'
+                        style="display: none;">
+                    <em class="far fa-arrow-alt-circle-right"></em> Start the tool!
+                </button>
+            </div>
+            <br>
+            <output id="file_list"></output>
+            <hr/>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input @change="uploadCSVFiles" class="custom-file-input" id="inputGroupFile" multiple
+                                   ref="csvFiles" type="file">
+                            <label class="custom-file-label" for="inputGroupFile">Choose .csv files</label>
+                        </div>
+                    </div>
+                    Du benötigst folgende CSV-Dateien um das Tool zu nutzen: <br> <strong>user.csv, mapping.csv,
+                    web_results.csv</strong><em>, mouse.csv, gaze.csv, mouse_shots.csv, gaze_shots.csv</em><br>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input @change="uploadImageFiles" class="custom-file-input-image" id="inputGroupFile-image"
+                                   multiple
+                                   ref="imageFiles" type="file">
+                            <label class="custom-file-label" for="inputGroupFile-image">Choose the image
+                                files</label>
+                        </div>
+                    </div>
+                    Deine Bilder sollten genauso benannt sein wie in <strong>web_results.csv und
+                    mapping.csv</strong>.<br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Dataimport Tab Ende-->
+    <!--Visualization tab Anfang-->
+    <div class="tab-pane container-fluid fade" id="menu_vis">
+        <div class="jumbotron jumbotron-fluid" id="toolJumbotron">
+            <div class="container-fluid">
+                <div class="row no-gutters" id="optionsSidebar">
+                    <!--Auswahl Visualisierung Anfang-->
+                    <h2>Wählen Sie eine Visualisierung aus:&nbsp;</h2>
+
+                    <div>
+                        <select autocomplete="off" class="form-control input-sm" id="selectVis">
+                            <option selected="selected" value="select_vis_option">Wähle eine Visualisierung aus
+                            </option>
+                            <option value="timeline">Zeitleiste</option>
+                            <option value="userflow">Nutzerfluss</option>
+                            <option value="clickmap">Klickpfad</option>
+                        </select>
+                    </div>
+                    <!--Auswahl Visualisierung Ende-->
+                    <br>
+                </div>
+                <div class="row no-gutters">
+                    <h3>Wählen Sie eine Website aus:&nbsp;</h3>
+                    <div>
+                        <select autocomplete="off" class="form-control input-sm" id="selectWebsite">
+                            <option selected="selected" value="unloaded">Please upload your data.</option>
+                        </select>
+                    </div>
+                    <br>
+                </div>
+                <!--TimelineOptions-->
+                <div align="center">
+                    <div class="timelineOptions" id="timelineOptions" style="display: none;">
+                        <h4><strong>Zeitleiste:</strong></h4>
+                        <label><input id="toggletimelineOptions" onclick="showVisualizationOptions()" type="checkbox">&nbsp;Zeige
+                            Einstellungen für Zeitleiste</label>
+                    </div>
+
+                    <!--ClickmapOptions-->
+                    <div class="clickmapOptions" id="clickmapOptions" style="display: none;">
+                        <h4><strong>Klickpfad:</strong></h4>
+                        <label><input id="toggleclickmapOptions" onclick="showVisualizationOptions()" type="checkbox">&nbsp;Zeige
+                            Einstellungen für Klickpfad</label>
+                    </div>
+                    <!--userflowOptions-->
+                    <div class="userflowOptions" id="userflowOptions" style="display: none;">
+                        <h4><strong>Nutzerfluss:</strong></h4>
+                        <label><input id="toggleuserflowOptions" onclick="showVisualizationOptions()" type="checkbox">&nbsp;Zeige
+                            Einstellungen für Nutzerfluss</label>
+                    </div>
+                    <!--layerSelectionOption-->
+                    <div class="layerSelectionOptions" id="layerSelectionOptions" style="display: none;">
+
+                        <label><input id="toggleLayerSelectionOptions" onclick="showLayerSelection()" type="checkbox">&nbsp;Zeige
+                            Layerauswahl</label>
+
+                    </div>
+                    <!--detailviewOptions-->
+                    <div class="detailviewOptions" id="detailviewOptions" style="display: none;">
+                        <label><input id="toggleDetailviewOptions" onclick="showDetailviewOptions()" type="checkbox">&nbsp;Zeige
+                            Einstellungen für Detailansicht</label>
+                    </div>
+                </div>
+
+                <!--CanvasDiv & Canvas-->
+                <div class="col" id="visualizationsCanvasDiv"
+                     style="padding-right: 0; padding-left: 0; min-height: 100px;">
+                    <canvas id="visualizationsCanvas" style="position: absolute; left: 0; top: 0; z-index: 1;">
+                        Your browser does not support the HTML5 canvas tag.
+                    </canvas>
+                    <!--Videos fuer Timeline-->
+                    <div id="videoPlayer_wrapper"
+                         style="height:176px ; overflow: hidden;">
+                        <video controls id="myVideo"
+                               style="width: inherit; height: inherit; position: absolute; left : 0; top: 0; z-index: 6; display: none;">
+                            Your browser does not support HTML5 video.
+                        </video>
+                    </div>
+                    <!--VisualizationSettings in CanvasDiv-->
+                    <div class="visualizationSettings" style="position: absolute; left : 0; top: 0; z-index: 5;">
+                        <div class="row no-gutters" style="height: inherit">
+                            <!--timelineSettings-->
+
+                            <div class="innercopen" id="timelineSettingsDiv">
+                                <button class="collapsible" id="timelineSettings" name="visSetting">
+                                    <strong>Zeitleiste</strong></button>
+                                <div class="content">
+                                    <h5>Allgemeines:</h5>
+                                    <label><select id="selectUserVideo">
+                                        <option selected="selected" value="unloaded">Please upload your data.</option>
+                                    </select>&nbsp;Video</label>
+                                    <!--timelineWithLayer-->
+                                    <!--<label><input id="timelineWithLayer" onclick="changeWithLayer()"
+                                                  type="checkbox">Show all layers</label>
+                                    -->
+                                    <!--deleteHoverPlaneOnMouseLeave-->
+
+                                    <label><input id="deleteHoverPlaneOnMouseLeave" onclick="changeHoverEvents()"
+                                                  type="checkbox">&nbsp;Lösche Hoverevent beim Verlassen</label>
+                                    <!--timelineActionDrivenRender-->
+                                    <label><input id="timelineActionDrivenRender" onclick="changeHoverEvents()"
+                                                  type="checkbox">&nbsp;Aktionsgesteuertes Rendern</label>
+                                    <label><input id="timelineMoreThanOneSelectable"
+                                                  onclick="changeMoreThanOneSelectable()"
+                                                  type="checkbox">&nbsp;Angeklickte Hoverevents behalten</label>
+                                    <!--pixelPerSecond-->
+                                    <form>
+                                        <h5>Größen:</h5>
+                                        <label><input id="pixelPerSecond" max="10000" min="1" name="pixelPerSecond"
+                                                      onchange="parameterChange()" type="number" value="50">&nbsp;Zeitleistenbreite</label>
+                                        <!--timelineTextSize-->
+                                        <label><input id="timelineTextSize" max="90" min="1" name="timelineTextSize"
+                                                      onchange="parameterChange()" type="number" value="60">&nbsp;Schriftgröße</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(parameterChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Größen zurücksetzen
+                                        </button>
+                                    </form>
+                                    <form>
+                                        <h5>Farben:</h5>
+                                        <!--timelineColor-->
+                                        <label><input id="timelineColor" name="timelineColor"
+                                                      onchange="parameterChange()"
+                                                      type="color"
+                                                      value="#6c7173">&nbsp;Text- und Linienfarbe</label>
+                                        <!--textBackgroundColor-->
+                                        <label><input id="textBackgroundColor" name="textBackgroundColor"
+                                                      onchange="parameterChange()"
+                                                      type="color" value="#b7e5db">&nbsp;Texthintergrundfarbe</label>
+                                        <!--emptyPlaneColor-->
+                                        <label><input id="emptyPlaneColor" name="emptyPlaneColor"
+                                                      onchange="parameterChange()"
+                                                      type="color" value="#62baac">&nbsp;Layerreihe
+                                            Hintergrundfarbe</label>
+                                        <!--dashedLineColor-->
+                                        <label><input id="dashedLineColor" name="dashedLineColor"
+                                                      onchange="parameterChange()"
+                                                      type="color" value="#ff0000">&nbsp;Gestrichelte
+                                            Linienfarbe</label>
+                                        <!--timelineVideoPositionColor-->
+                                        <label><input id="timelineVideoPositionColor" name="timelineVideoPositionColor"
+                                                      onchange="changeHoverEvents()"
+                                                      type="color"
+                                                      value="#ff0000">&nbsp;Videozeitpunktanzeigenfarbe</label>
+                                        <label><input id="timelineBackgroundColor" name="timelineBackgroundColor"
+                                                      onchange="changeBackground()"
+                                                      type="color"
+                                                      value="#ffffff">&nbsp;Hintergrundfarbe</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(parameterChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Farben zurücksetzen
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <!--ClickmapSettings-->
+                            <div class="innercopen" id="clickmapSettingsDiv">
+                                <button class="collapsible" id="clickmapSettings" name="visSetting">
+                                    <strong>Klickpfad</strong></button>
+                                <div class="content">
+                                    <!--deleteClickmapHoverNodeOnMouseLeave-->
+                                    <h5>Allgemeines:</h5>
+                                    <label><input id="deleteClickmapHoverNodeOnMouseLeave"
+                                                  onclick="changeHoverEvents()" type="checkbox">&nbsp;Lösche
+                                        Hoverevent (Knoten) beim Verlassen</label>
+                                    <!--deleteClickmapHoverEdgeOnMouseLeave-->
+                                    <label><input checked id="deleteClickmapHoverEdgeOnMouseLeave"
+                                                  onclick="changeHoverEvents()"
+                                                  type="checkbox">&nbsp;Lösche
+                                        Hoverevent (Kanten) beim Verlassen</label>
+                                    <!--suppressParallelTransition-->
+                                    <label><input id="suppressParallelTransition" onclick="edgeChange()"
+                                                  type="checkbox">&nbsp;Parallele Sichtbarkeit ignorieren</label>
+                                    <!--clickmapActionDrivenRender-->
+                                    <label><input id="clickmapActionDrivenRender" onclick="changeHoverEvents()"
+                                                  type="checkbox">&nbsp;Aktionsgesteuertes Rendern</label>
+                                    <label><input id="clickmapMoreThanOneSelectable"
+                                                  onclick="changeMoreThanOneSelectable()"
+                                                  type="checkbox">&nbsp;Angeklickte Hoverevents behalten</label>
+                                    <label><select autocomplete="off" id="selectLayoutAlgorithm">
+                                        <option selected="selected" value='grid'>Raster
+                                        </option>
+                                        <option value='concentric'>Konzentrisch</option>
+                                        <option value='circle'>Kreis</option>
+                                        <option value='dagre'>Dagre</option>
+                                        <option value='random'>Zufällig</option>
+                                    </select>&nbsp;Layoutalgorithmus</label>
+                                    <!--clickmapWeightSettings-->
+                                    <form>
+                                        <h5>Gewichtung der Knotengröße:</h5>
+                                        <!--clickmapFixationCountRatio-->
+                                        <label>
+                                            <input id="clickmapFixationCountRatio" min="0"
+                                                   name="clickmapFixationCountRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Fixationsanzahl</label>
+                                        <!--clickmapFixationDurationRatio-->
+                                        <label>
+                                            <input id="clickmapFixationDurationRatio" min="0"
+                                                   name="clickmapFixationDurationRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Fixationsdauer</label>
+                                        <!--clickmapMouseDataCountRatio-->
+                                        <label>
+                                            <input id="clickmapMouseDataCountRatio" min="0"
+                                                   name="clickmapMouseDataCountRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Mausinteraktionsanzahl</label>
+                                        <!--clickmapClickCountRatio-->
+                                        <label>
+                                            <input id="clickmapClickCountRatio" min="0"
+                                                   name="clickmapClickCountRatio"
+                                                   onchange="weightChange()" type="number"
+                                                   value="1">&nbsp;Klickanzahl</label>
+                                        <!--clickmapUserCountRatio-->
+                                        <label>
+                                            <input id="clickmapUserCountRatio" min="0"
+                                                   name="clickmapUserCountRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Nutzeranzahl</label>
+                                        <!--clickmapShotsIncludedRatio-->
+                                        <label>
+                                            <input id="clickmapShotsIncludedRatio" min="0"
+                                                   name="clickmapShotsIncludedRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Shotanzahl
+                                            des Stimulus</label>
+                                        <!--clickmapDwellTimeRatio-->
+                                        <label>
+                                            <input id="clickmapDwellTimeRatio" min="0"
+                                                   name="clickmapDwellTimeRatio"
+                                                   onchange="weightChange()" type="number" value="1">&nbsp;Verweildauer</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(weightChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Gewichtung zurücksetzen
+                                        </button>
+                                        <br>
+                                    </form>
+                                    <br>
+                                    <!--clickmapCircleSegments-->
+                                    <form>
+                                        <h5>Größen, Längen und Segmente:</h5>
+                                        <label>
+                                            <input id="clickmapCircleSegments" max="100" min="1"
+                                                   name="clickmapCircleSegments"
+                                                   onchange="nodeChange()" type="number"
+                                                   value="30">&nbsp;Kreissegmente</label>
+                                        <!--clickmapBubbleSize-->
+                                        <label>
+                                            <input id="clickmapBubbleSize" max="3" min="0.1" name="clickmapBubbleSize"
+                                                   onchange="weightChange()"
+                                                   step="0.1" type="number" value="1">&nbsp;Knotengröße</label>
+                                        <!--clickmapBubbleSize-->
+                                        <label>
+                                            <input id="clickmapMinBubbleSize" max="100" min="0"
+                                                   name="clickmapMinBubbleSize"
+                                                   onchange="weightChange()"
+                                                   type="number" value="10">%&nbsp;Mindestknotengröße</label>
+                                        <!--clickmapArrowHeadLength-->
+                                        <label>
+                                            <input id="clickmapArrowHeadLength" max="1000" min="1"
+                                                   name="clickmapArrowHeadLength"
+                                                   onchange="edgeChange()" type="number"
+                                                   value="100">&nbsp;Pfeilkopflänge</label>
+                                        <!--clickmapArrowHeadWidth-->
+                                        <label>
+                                            <input id="clickmapArrowHeadWidth" max="1000" min="1"
+                                                   name="clickmapArrowHeadWidth"
+                                                   onchange="edgeChange()" type="number"
+                                                   value="100">&nbsp;Pfeilkopfbreite</label>
+                                        <!--clickmapHoverArrowColor-->
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(weightChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Zurücksetzen
+                                        </button>
+                                    </form>
+                                    <form>
+                                        <h5>Farben:</h5>
+                                        <label>
+                                            <input id="clickmapHoverArrowColor" name="clickmapHoverArrowColor"
+                                                   onchange="changeHoverEvents()" type="color" value="#ff0000">&nbsp;Kantenfarbe
+                                            (beim Hovern)</label>
+                                        <!--clickmapTextColor-->
+
+                                        <label>
+                                            <input id="clickmapTextColor" name="clickmapTextColor"
+                                                   onchange="parameterChange()"
+                                                   type="color" value="#000000">&nbsp;Textfarbe</label>
+                                        <!--clickmapTransitionColor-->
+                                        <label>
+                                            <input id="clickmapTransitionColor" name="clickmapTransitionColor"
+                                                   onchange="edgeChange()" type="color" value="#62baac">&nbsp;Kantenfarbe
+                                            (Transitionen)</label>
+                                        <!--clickmapParallelColor-->
+                                        <label>
+                                            <input id="clickmapParallelColor" name="clickmapParallelColor"
+                                                   onchange="edgeChange()"
+                                                   type="color" value="#0000ff">&nbsp;Kantenfarbe (Parallele Sichtbarkeit)</label>
+                                        <!--emptyCircleColor-->
+                                        <label>
+                                            <input id="emptyCircleColor" name="emptyCircleColor" onchange="nodeChange()"
+                                                   type="color" value="#62baac">&nbsp;Knotenhintergrundfarbe</label>
+                                        <!--clickmapTextBackgroundColor-->
+                                        <label>
+                                            <input id="clickmapTextBackgroundColor" name="clickmapTextBackgroundColor"
+                                                   onchange="changeHoverEvents()" type="color" value="#b7e5db">&nbsp;Texthintergrundfarbe</label>
+                                        <label><input id="clickmapBackgroundColor" name="clickmapBackgroundColor"
+                                                      onchange="changeBackground()"
+                                                      type="color"
+                                                      value="#ffffff">&nbsp;Hintergrundfarbe</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(parameterChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Farben zurücksetzen
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="innercopen" id="userflowSettingsDiv">
+                                <button class="collapsible" id="userflowSettings" name="visSetting">
+                                    <strong>Nutzerfluss</strong></button>
+                                <div class="content">
+                                    <!--deleteUserflowHoverNodeOnMouseLeave-->
+                                    <h5>Allgemeines:</h5>
+                                    <label><input id="deleteUserflowHoverNodeOnMouseLeave"
+                                                  onclick="changeHoverEvents()" type="checkbox">&nbsp;Lösche
+                                        Hoverevent (Knoten) beim Verlassen</label>
+                                    <!--deleteUserflowHoverEdgeOnMouseLeave-->
+                                    <label><input checked id="deleteUserflowHoverEdgeOnMouseLeave"
+                                                  onclick="changeHoverEvents()" type="checkbox">&nbsp;Lösche
+                                        Hoverevent (Kanten) beim Verlassen</label>
+                                    <!--userflowActionDrivenRender-->
+                                    <label><input id="userflowActionDrivenRender" onclick="changeHoverEvents()"
+                                                  type="checkbox">&nbsp;Aktionsgesteuertes Rendern</label>
+                                    <label><input id="userflowMoreThanOneSelectable"
+                                                  onclick="changeMoreThanOneSelectable()"
+                                                  type="checkbox">&nbsp;Angeklickte Hoverevents behalten</label>
+                                    <form>
+                                        <h5>Größen:</h5>
+                                        <label>
+                                            <input id="userflowWidth" max="1000" min="1"
+                                                   name="userflowWidth"
+                                                   onchange="parameterChange()" type="number"
+                                                   value="256">&nbsp;Knotenbreite</label>
+                                        <label>
+                                            <input id="userflowHeightPerUser" max="1000" min="1"
+                                                   name="userflowHeightPerUser"
+                                                   onchange="parameterChange()" type="number"
+                                                   value="64">&nbsp;Knotengröße pro Nutzer</label>
+                                        <label>
+                                            <input id="userflowHoverHeight" max="1000" min="1"
+                                                   name="userflowHoverHeight"
+                                                   onchange="changeHoverEvents()" type="number"
+                                                   value="550">&nbsp;Größe Hoverevent</label>
+                                        <label>
+                                            <input id="userflowTextSize" max="1000" min="1"
+                                                   name="userflowTextSize"
+                                                   onchange="graphChange()" type="number"
+                                                   value="16">&nbsp;Textgröße</label>
+                                        <label>
+                                            <input id="userflowHorizontalPadding" max="1000" min="1"
+                                                   name="userflowHorizontalPadding"
+                                                   onchange="parameterChange()" type="number"
+                                                   value="250">&nbsp;Horizontaler Abstand zwischen Knoten</label>
+                                        <label>
+                                            <input id="userflowVerticalPadding" max="1000" min="1"
+                                                   name="userflowVerticalPadding"
+                                                   onchange="parameterChange()" type="number"
+                                                   value="80">&nbsp;Vertikaler Abstand zwischen Knoten</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(parameterChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Größen zurücksetzen
+                                        </button>
+                                    </form>
+                                    <form>
+                                        <h5>Farben:</h5>
+                                        <label>
+                                            <input id="userflowTextColor" name="userflowTextColor"
+                                                   onchange="graphChange()" type="color" value="#000000">&nbsp;Textfarbe</label>
+
+                                        <label>
+                                            <input id="userflowSessionColor" name="userflowSessionColor"
+                                                   onchange="graphChange()"
+                                                   type="color" value="#777777">&nbsp;Zusammenfassungsfarbe (Sitzungen)</label>
+                                        <!--clickmapTransitionColor-->
+                                        <label>
+                                            <input id="userflowEmptyRectangleColor" name="userflowEmptyRectangleColor"
+                                                   onchange="nodeChange()" type="color" value="#b5e099">&nbsp;Knotenfarbe</label>
+                                        <!--userflowEdgeColor-->
+                                        <label>
+                                            <input id="userflowEdgeColor" name="userflowEdgeColor"
+                                                   onchange="edgeChange()"
+                                                   type="color" value="#dae2e4">&nbsp;Kantenfarbe</label>
+                                        <!--emptyCircleColor-->
+                                        <label>
+                                            <input id="userflowDropoutColor" name="userflowDropoutColor"
+                                                   onchange="dropoutChange()"
+                                                   type="color" value="#eb7469">&nbsp;Abbruchkantenfarbe</label>
+                                        <!--clickmapTextBackgroundColor-->
+                                        <label>
+                                            <input id="userflowTextBackgroundColor"
+                                                   name="userflowTextBackgroundColor"
+                                                   onchange="changeHoverEvents()" type="color" value="#b7e5db">&nbsp;Texthintergrundfarbe</label>
+                                        <!--clickmapTextBackgroundColor-->
+                                        <label>
+                                            <input id="userflowEdgeHoverColor" name="userflowEdgeHoverColor"
+                                                   onchange="changeHoverEvents()" type="color" value="#ff0000">&nbsp;Kantenfarbe
+                                            (beim Hovern)</label>
+                                        <label><input id="userflowBackgroundColor" name="userflowBackgroundColor"
+                                                      onchange="changeBackground()"
+                                                      type="color"
+                                                      value="#f7f7f7">&nbsp;Hintergrundfarbe</label>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(parameterChange, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Farben zurücksetzen
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <!--LayerSelection in CanvasDiv-->
+                            <div class="innercopen" id="layerSelectionDiv">
+                                <button class="collapsible" id="layerSelection" name="visSetting">
+                                    <strong>Layerauswahl</strong></button>
+                                <div class="content">
+                                    <!--all Layer-->
+                                    <button class="btn btn-primary btn-sm" id="allLayerSelect" name="allLayerSelect"
+                                            type="button">Alle Layer
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" id="mainLayerSelect" name="mainLayerSelect"
+                                            type="button">Nur Hauptlayer
+                                    </button>
+                                    <ul id="userList" style="list-style-type:none">
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--Detailview in CanvasDiv-->
+                            <div class="innercopen" id="detailviewSelectionDiv">
+                                <button class="collapsible" id="detailviewSelection" name="visSetting"><strong>Detailansicht</strong>
+                                </button>
+                                <div class="content">
+                                    <form>
+                                        <h5>Heatmap:</h5>
+                                        <label><input checked checked
+                                                      id="showHeatmapOnDetailview" onclick="recreateDetailView()"
+                                                      type="checkbox">&nbsp;Heatmap
+                                            anzeigen</label>
+                                        <label><input id="radiusHM" max="100" min="10" type="range" value="60">&nbsp;Radius</label>
+                                        <br>
+                                        <label><input id="blurHM" max="50" min="10" type="range"
+                                                      value="40">&nbsp;Unschärfe/Blur</label>
+                                        <br>
+                                        <label><input id="transparencyHM" max="255" min="0" type="range" value="255">&nbsp;Transparenz</label>
+                                        <br>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(triggerChangeHMOptions, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Einstellungen zurücksetzen
+                                        </button>
+                                    </form>
+                                    <br>
+                                    <form>
+                                        <h5>Blickpfad:</h5>
+                                        <label><input checked id="showGazePathOnDetailview"
+                                                      onclick="recreateDetailView()"
+                                                      type="checkbox">&nbsp;Blickpfad
+                                            anzeigen</label>
+                                        <label><input id="radiusSP" max="10" min="1" type="range"
+                                                      value="5">&nbsp;Radius</label>
+                                        <br>
+                                        <label><input id="transparencySP" max="100" min="0" type="range" value="40">&nbsp;Transparenz</label>
+                                        <br>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(triggerChangeSPOptions, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Einstellungen zurücksetzen
+                                        </button>
+                                    </form>
+                                    <br>
+                                    <form>
+                                        <h5>Mauspfad:</h5>
+                                        <label><input checked id="showMousePathOnDetailview"
+                                                      onclick="recreateDetailView()" type="checkbox">&nbsp;Mauspfad
+                                            anzeigen</label>
+                                        <label><input id="radiusMP" max="10" min="1" type="range"
+                                                      value="5">&nbsp;Radius</label>
+                                        <br>
+                                        <label><input id="transparencyMP" max="100" min="0" type="range" value="40">&nbsp;Transparenz</label>
+                                        <br>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(triggerChangeMPOptions, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Einstellungen zurücksetzen
+                                        </button>
+                                    </form>
+                                    <br>
+                                    <form>
+                                        <h5>Klicks:</h5>
+                                        <label><input checked checked
+                                                      id="showClicksOnDetailview" onclick="recreateDetailView()"
+                                                      type="checkbox">&nbsp;Klicks
+                                            anzeigen</label>
+                                        <label><input id="radiusClicks" max="100" min="1" type="range" value="20">&nbsp;Radius</label>
+                                        <br>
+                                        <button class="btn btn-light btn-sm"
+                                                onclick="setTimeout(triggerChangeClickOptions, 50)"
+                                                type="reset">
+                                            <i class="fas fa-sync-alt"></i> Einstellungen zurücksetzen
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Visualization Tab Ende-->
+    </div>
+</div>
+<!--Script for Collapsible Divs-->
+<script>$("#videoPlayer_wrapper").draggable().resizable().hide();
+$('#myVideo').on('mousedown', function (e) {
+    // calc relative mouse pos
+    $(this).css('cursor', 'move');
+    // let rect = $('#videoPlayer_wrapper')[0].getBoundingClientRect(),
+    //     y = e.clientY - rect.top;
+    //
+    // if (y > $('#myVideo')[0].height - 40) {   // if in ctrl zone disable drag
+    //     if (typeof $('#videoPlayer_wrapper').draggable === "function")
+    //         $('#videoPlayer_wrapper').draggable('disable');
+    // }
+});
+
+// $('#myVideo').on('mouseup', function (e) {
+//     if (typeof $('#videoPlayer_wrapper').draggable === "function")
+//         $('#videoPlayer_wrapper').draggable('enable'); // always enable
+// });
+</script>
+<script>
+    let coll = document.getElementsByClassName("collapsible");
+    let i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            let content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
+<script>
+    // Get the video element with id="myVideo"
+    let vid = document.getElementById("myVideo");
+
+    // Assign an ontimeupdate event to the video element, and execute a function if the current playback position has changed
+    vid.ontimeupdate = function () {
+        myFunction()
+    };
+
+    function myFunction() {
+        // Display the current position of the video in a p element with id="demo"
+        if (vis && vis instanceof Timeline)
+            vis.drawTimelineTimestep(vid.currentTime);
+        else {
+            if (vid) {
+                if (typeof vid.pause === "function")
+                    vid.pause();
+                vid.src = "";
+            }
+        }
+    }
+</script>
+
+<footer class="page-footer font-small blue">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">
+        ©
+        <script type="text/javascript">
+            document.write(new Date().getFullYear());
+        </script>
+        Copyright: Christian Brozmann
+        <a href="http://www.apache.org/licenses/LICENSE-2.0.html"> Apache License 2.0</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+
+
+<!--Jquery muss vor Bootstrap importiert werden
+<script src="lib/jquery-3.4.1.min.js"></script>-->
+<!--<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+-->
+<!--deepmerge um Objekte zu mergen und alle Properties zusammen zu fassen-->
+<script src="lib/umd.js"></script>
+
+<!--Jquery.csv fuer CSV Import-->
+<script src="lib/jquery.csv.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.5/jquery.csv.min.js"></script>
+-->
+<!--JS files fuer HTML Design-->
+<!--<script src="lib/bootstrap.min.js"></script>-->
+<script crossorigin="anonymous"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+<!--THREE.js-->
+<!--<script src="http://threejs.org/build/three.js" charset="utf-8"></script>-->
+<script src="lib/three.min.js"></script>
+
+<script src="lib/OrbitControls.js"></script>
+
+<!--Script fuer 3d-force-graphen-->
+<!--<script src="//unpkg.com/3d-force-graph"></script>-->
+
+<!--KeyboardState um Keyboardeingaben zu verwalten-->
+<script src="lib/KeyboardState.js"></script>
+<!--THREEx.FullScreen um canvas in Fullscreen starten zu koennen-->
+<script src="lib/THREEx.FullScreen.js"></script>
+
+<!--dagree fuer Layouting fuer Clickmap bzw. insgesamt fuer gerichtete Graphen-->
+<!--<script src="lib/dagre.min.js"></script>-->
+
+<!--Cytoscape fuer Layouting-->
+<script src="lib/dagre.js"></script>
+<script src="lib/cytoscape.min.js"></script>
+<script src="lib/cytoscape-dagre.js"></script>
+
+<script src="lib/simpleheat.js"></script>
+
+
+<!--Eigene Javascriptfiles-->
+<script src="js/GlobalVariableManager.js"></script>
+<script src="js/Import.js"></script>
+<script src="js/VisualizationLoader.js"></script>
+<script src="js/TextureManager.js"></script>
+<script src="js/MaterialFactory.js"></script>
+<script src="js/GeometryFactory.js"></script>
+<script src="js/ObjectCreator.js"></script>
+<script src="js/Visualization.js"></script>
+<script src="js/UserFilter.js"></script>
+<script src="js/Timeline.js"></script>
+<script src="js/Clickmap.js"></script>
+<script src="js/Userflow.js"></script>
+<script src="js/DetailView.js"></script>
+<script src="js/heat.js"></script>
+<script src="js/scanpath.js"></script>
+
+</body>
+
+</html>

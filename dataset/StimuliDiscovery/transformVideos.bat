@@ -1,0 +1,52 @@
+cd videos
+ffmpeg -i p1_amazon.webm -max_muxing_queue_size 9999 p1_amazon.mp4
+ffmpeg -i p1_cnn.webm -max_muxing_queue_size 9999 p1_cnn.mp4
+ffmpeg -i p1_gm.webm -max_muxing_queue_size 9999 p1_gm.mp4
+ffmpeg -i p1_guardian.webm -max_muxing_queue_size 9999 p1_guardian.mp4
+ffmpeg -i p1_kia.webm -max_muxing_queue_size 9999 p1_kia.mp4
+ffmpeg -i p1_mayo.webm -max_muxing_queue_size 9999 p1_mayo.mp4
+ffmpeg -i p1_nih.webm -max_muxing_queue_size 9999 p1_nih.mp4
+ffmpeg -i p1_nissan.webm -max_muxing_queue_size 9999 p1_nissan.mp4
+ffmpeg -i p1_reddit.webm -max_muxing_queue_size 9999 p1_reddit.mp4
+ffmpeg -i p1_steam.webm -max_muxing_queue_size 9999 p1_steam.mp4
+ffmpeg -i p1_walmart.webm -max_muxing_queue_size 9999 p1_walmart.mp4
+ffmpeg -i p1_webmd.webm -max_muxing_queue_size 9999 p1_webmd.mp4
+
+ffmpeg -i p2_amazon.webm -max_muxing_queue_size 9999 p2_amazon.mp4
+ffmpeg -i p2_cnn.webm -max_muxing_queue_size 9999 p2_cnn.mp4
+ffmpeg -i p2_gm.webm -max_muxing_queue_size 9999 p2_gm.mp4
+ffmpeg -i p2_guardian.webm -max_muxing_queue_size 9999 p2_guardian.mp4
+ffmpeg -i p2_kia.webm -max_muxing_queue_size 9999 p2_kia.mp4
+ffmpeg -i p2_mayo.webm -max_muxing_queue_size 9999 p2_mayo.mp4
+ffmpeg -i p2_nih.webm -max_muxing_queue_size 9999 p2_nih.mp4
+ffmpeg -i p2_nissan.webm -max_muxing_queue_size 9999 p2_nissan.mp4
+ffmpeg -i p2_reddit.webm -max_muxing_queue_size 9999 p2_reddit.mp4
+ffmpeg -i p2_steam.webm -max_muxing_queue_size 9999 p2_steam.mp4
+ffmpeg -i p2_walmart.webm -max_muxing_queue_size 9999 p2_walmart.mp4
+ffmpeg -i p2_webmd.webm -max_muxing_queue_size 9999 p2_webmd.mp4
+
+ffmpeg -i p3_amazon.webm -max_muxing_queue_size 9999 p3_amazon.mp4
+ffmpeg -i p3_cnn.webm -max_muxing_queue_size 9999 p3_cnn.mp4
+ffmpeg -i p3_gm.webm -max_muxing_queue_size 9999 p3_gm.mp4
+ffmpeg -i p3_guardian.webm -max_muxing_queue_size 9999 p3_guardian.mp4
+ffmpeg -i p3_kia.webm -max_muxing_queue_size 9999 p3_kia.mp4
+ffmpeg -i p3_mayo.webm -max_muxing_queue_size 9999 p3_mayo.mp4
+ffmpeg -i p3_nih.webm -max_muxing_queue_size 9999 p3_nih.mp4
+ffmpeg -i p3_nissan.webm -max_muxing_queue_size 9999 p3_nissan.mp4
+ffmpeg -i p3_reddit.webm -max_muxing_queue_size 9999 p3_reddit.mp4
+ffmpeg -i p3_steam.webm -max_muxing_queue_size 9999 p3_steam.mp4
+ffmpeg -i p3_walmart.webm -max_muxing_queue_size 9999 p3_walmart.mp4
+ffmpeg -i p3_webmd.webm -max_muxing_queue_size 9999 p3_webmd.mp4
+
+ffmpeg -i p4_amazon.webm -max_muxing_queue_size 9999 p4_amazon.mp4
+ffmpeg -i p4_cnn.webm -max_muxing_queue_size 9999 p4_cnn.mp4
+ffmpeg -i p4_gm.webm -max_muxing_queue_size 9999 p4_gm.mp4
+ffmpeg -i p4_guardian.webm -max_muxing_queue_size 9999 p4_guardian.mp4
+ffmpeg -i p4_kia.webm -max_muxing_queue_size 9999 p4_kia.mp4
+ffmpeg -i p4_mayo.webm -max_muxing_queue_size 9999 p4_mayo.mp4
+ffmpeg -i p4_nih.webm -max_muxing_queue_size 9999 p4_nih.mp4
+ffmpeg -i p4_nissan.webm -max_muxing_queue_size 9999 p4_nissan.mp4
+ffmpeg -i p4_reddit.webm -max_muxing_queue_size 9999 p4_reddit.mp4
+ffmpeg -i p4_steam.webm -max_muxing_queue_size 9999 p4_steam.mp4
+ffmpeg -i p4_walmart.webm -max_muxing_queue_size 9999 p4_walmart.mp4
+ffmpeg -i p4_webmd.webm -max_muxing_queue_size 9999 p4_webmd.mp4
