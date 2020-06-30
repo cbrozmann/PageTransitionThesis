@@ -302,6 +302,9 @@ function showDetailviewOptions() {
 function weightChange() {
     if (vis instanceof Clickmap) {
         clickmapBubbleSize = parseFloat(document.getElementById("clickmapBubbleSize").value);
+        clickmapArrowHeadLength = parseInt(document.getElementById("clickmapArrowHeadLength").value);
+        clickmapArrowHeadWidth = parseInt(document.getElementById("clickmapArrowHeadWidth").value);
+        clickmapCircleSegments = parseInt(document.getElementById("clickmapCircleSegments").value);
         vis.layoutAndDrawGraph();
     }
 }
